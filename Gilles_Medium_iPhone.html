@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Médium Pro"/>
+<meta name="theme-color" content="#1a1a1a"/>
+<title>Médium Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:#f7f6f2;color:#1a1a1a;min-height:100vh;padding:env(safe-area-inset-top,20px) 0 env(safe-area-inset-bottom,30px)}
+.app{max-width:500px;margin:0 auto;padding:0 16px}
+
+/* HEADER */
+.header{text-align:center;padding:20px 0 14px}
+.header h1{font-size:22px;font-weight:600}
+.header p{font-size:12px;color:#888;margin-top:2px}
+
+/* TABS */
+.tabs{display:flex;gap:0;background:#e8e5de;border-radius:12px;padding:3px;margin-bottom:16px}
+.tab{flex:1;text-align:center;padding:9px 6px;font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;color:#888;transition:all .2s}
+.tab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* CARDS */
+.card{background:#fff;border-radius:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:16px;margin-bottom:12px}
+.stitle{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#bbb;margin-bottom:10px;font-weight:600}
+label{font-size:12px;color:#888;display:block;margin-bottom:4px;font-weight:500}
+input,textarea{width:100%;border:1.5px solid #e0ddd6;border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;-webkit-appearance:none}
+input:focus,textarea:focus{border-color:#999}
+textarea{resize:none;min-height:70px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fl{margin-bottom:10px}.fl:last-child{margin-bottom:0}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap input{padding-left:36px;font-size:15px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;color:#bbb}
+.patient-list{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden;margin-bottom:12px}
+.patient-item{padding:13px 16px;border-bottom:1px solid #f0ede6;cursor:pointer;display:flex;align-items:center;gap:12px}
+.patient-item:last-child{border-bottom:none}
+.patient-item:active{background:#f7f6f2}
+.avatar{width:38px;height:38px;border-radius:50%;background:#e8e5de;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#888;flex-shrink:0}
+.patient-info{flex:1}
+.patient-name{font-size:15px;font-weight:500}
+.patient-sub{font-size:12px;color:#888;margin-top:1px}
+.patient-count{font-size:11px;color:#bbb;background:#f7f6f2;padding:3px 8px;border-radius:20px}
+
+/* FICHE PATIENT */
+.fiche-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.fiche-avatar{width:54px;height:54px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#fff;flex-shrink:0}
+.fiche-name{font-size:20px;font-weight:600}
+.fiche-sub{font-size:13px;color:#888;margin-top:2px}
+.fiche-stats{display:flex;gap:8px;margin-bottom:12px}
+.stat{flex:1;background:#f7f6f2;border-radius:12px;padding:10px;text-align:center}
+.stat-num{font-size:22px;font-weight:600}
+.stat-label{font-size:10px;color:#888;margin-top:1px;letter-spacing:.05em;text-transform:uppercase}
+.seance-item{border-bottom:1px solid #f0ede6;padding:12px 0}
+.seance-item:last-child{border-bottom:none}
+.seance-date{font-size:12px;color:#888;margin-bottom:4px}
+.seance-resume{font-size:13px;line-height:1.6;color:#1a1a1a}
+.seance-note{font-size:12px;color:#888;margin-top:4px;font-style:italic}
+.no-seances{text-align:center;color:#bbb;font-size:13px;padding:20px 0}
+
+/* ENREGISTREMENT */
+.rcenter{text-align:center;padding:8px 0}
+.rstatus{font-size:13px;color:#888;min-height:20px;margin-bottom:6px}
+.rtimer{font-size:48px;font-weight:300;color:#1a1a1a;font-variant-numeric:tabular-nums;margin:4px 0 12px}
+.wave{display:flex;align-items:center;justify-content:center;gap:4px;height:32px;margin-bottom:12px}
+.bar{width:4px;border-radius:2px;background:#ddd;min-height:4px;transition:height .1s}
+.rbtn{width:76px;height:76px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:30px;background:#1a1a1a;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:transform .1s;-webkit-appearance:none}
+.rbtn:active{transform:scale(.93)}
+.rbtn.rec{background:#c0392b}
+.rbtn.pau{background:#e67e22}
+.ctrls{display:flex;gap:10px;justify-content:center;margin-bottom:8px}
+.ctrls button{font-size:13px;padding:9px 18px;cursor:pointer;border-radius:10px;border:1.5px solid #e0ddd6;background:#fff;color:#1a1a1a;font-family:inherit;font-weight:500;-webkit-appearance:none}
+.ctrls button:active{background:#f7f6f2}
+.ctrls button:disabled{opacity:.35}
+audio{width:100%;margin-top:10px;border-radius:10px}
+.tbox{font-size:13px;color:#888;background:#f7f6f2;border-radius:10px;padding:10px 12px;max-height:80px;overflow-y:auto;white-space:pre-wrap;margin-top:8px;line-height:1.6}
+.note-input{margin-top:8px}
+.err{font-size:13px;color:#c0392b;background:#fdf0ef;border-radius:10px;padding:12px;margin-top:10px;line-height:1.6}
+
+/* BOUTONS */
+.btn-main{width:100%;padding:15px;font-size:15px;font-weight:600;cursor:pointer;border-radius:14px;border:none;background:#1a1a1a;color:#fff;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
+.btn-main:active{opacity:.85}
+.btn-main:disabled{opacity:.35}
+.btn-outline{width:100%;padding:13px;font-size:14px;font-weight:500;cursor:pointer;border-radius:14px;border:1.5px solid #e0ddd6;background:#fff;color:#1a1a1a;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
+.btn-outline:active{background:#f7f6f2}
+.btn-danger{width:100%;padding:13px;font-size:14px;font-weight:500;cursor:pointer;border-radius:14px;border:none;background:#fdf0ef;color:#c0392b;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.rtext{font-size:14px;line-height:1.8;color:#1a1a1a;white-space:pre-wrap}
+.arow{display:flex;gap:8px;margin-top:10px}
+.arow button{flex:1;font-size:13px;font-weight:500;padding:11px 6px;cursor:pointer;border-radius:10px;border:1.5px solid #e0ddd6;background:#fff;color:#1a1a1a;font-family:inherit;-webkit-appearance:none}
+.arow button:active{background:#f7f6f2}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:15px;color:#1a1a1a;cursor:pointer;margin-bottom:14px;font-weight:500;background:none;border:none;font-family:inherit;padding:0}
+.install-tip{background:#1a1a1a;color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.6}
+.install-tip strong{display:block;margin-bottom:3px;font-size:14px}
+.install-tip button{margin-top:8px;background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit}
+.empty-state{text-align:center;padding:40px 20px;color:#bbb}
+.empty-state div{font-size:40px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>✦ Médium Pro</h1>
+    <p>Gestion des séances</p>
+  </div>
+
+  <div class="install-tip" id="tip" style="display:none">
+    <strong>📲 Ajouter à l'écran d'accueil</strong>
+    Appuyez sur ⎋ Partager → "Sur l'écran d'accueil"
+    <br><button onclick="document.getElementById('tip').style.display='none'">Masquer</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-patients" onclick="showTab('patients')">👥 Patients</div>
+    <div class="tab" id="tab-seance" onclick="showTab('seance')">🎙 Séance</div>
+  </div>
+
+  <!-- ===== ONGLET PATIENTS ===== -->
+  <div id="view-patients">
+
+    <!-- Liste patients -->
+    <div id="view-liste">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search" placeholder="Rechercher un patient..." oninput="filtrerPatients()" autocomplete="off"/>
+      </div>
+      <div id="patient-list-wrap"></div>
+      <button class="btn-main" onclick="showNouveauPatient()">+ Nouveau patient</button>
+    </div>
+
+    <!-- Fiche patient -->
+    <div id="view-fiche" style="display:none">
+      <button class="back-btn" onclick="showListe()">← Retour</button>
+      <div class="card">
+        <div class="fiche-header">
+          <div class="fiche-avatar" id="fiche-avatar"></div>
+          <div>
+            <div class="fiche-name" id="fiche-name"></div>
+            <div class="fiche-sub" id="fiche-sub"></div>
+          </div>
+        </div>
+        <div class="fiche-stats">
+          <div class="stat"><div class="stat-num" id="stat-seances">0</div><div class="stat-label">Séances</div></div>
+          <div class="stat"><div class="stat-num" id="stat-dernier">—</div><div class="stat-label">Dernière</div></div>
+        </div>
+        <div class="stitle">Notes personnelles</div>
+        <textarea id="fiche-notes" placeholder="Notes sur ce patient..." rows="3" onblur="sauvegarderNotes()"></textarea>
+      </div>
+      <div class="card">
+        <div class="stitle">Historique des séances</div>
+        <div id="historique-seances"><div class="no-seances">Aucune séance enregistrée</div></div>
+      </div>
+      <button class="btn-main" onclick="demarrerSeancePour()">🎙 Démarrer une séance</button>
+      <button class="btn-danger" onclick="supprimerPatient()">Supprimer ce patient</button>
+    </div>
+
+    <!-- Nouveau patient -->
+    <div id="view-nouveau" style="display:none">
+      <button class="back-btn" onclick="showListe()">← Retour</button>
+      <div class="card">
+        <div class="stitle">Nouveau patient</div>
+        <div class="r2">
+          <div class="fl"><label>Prénom *</label><input type="text" id="np-prenom" placeholder="Marie" autocomplete="off"/></div>
+          <div class="fl"><label>Nom *</label><input type="text" id="np-nom" placeholder="Dupont" autocomplete="off"/></div>
+        </div>
+        <div class="fl"><label>Email</label><input type="email" id="np-email" placeholder="marie@email.com" autocomplete="off"/></div>
+        <div class="fl"><label>Téléphone</label><input type="tel" id="np-tel" placeholder="06 00 00 00 00" autocomplete="off"/></div>
+        <div class="fl"><label>Notes</label><textarea id="np-notes" placeholder="Notes personnelles..." rows="3"></textarea></div>
+      </div>
+      <button class="btn-main" onclick="creerPatient()">Créer le patient</button>
+    </div>
+
+  </div>
+
+  <!-- ===== ONGLET SÉANCE ===== -->
+  <div id="view-seance" style="display:none">
+
+    <!-- Sélection patient -->
+    <div id="seance-select-patient">
+      <div class="card">
+        <div class="stitle">Patient pour cette séance</div>
+        <div class="search-wrap" style="margin-bottom:0">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-seance" placeholder="Rechercher un patient..." oninput="filtrerPatientsSeance()" autocomplete="off"/>
+        </div>
+        <div id="seance-patient-list" style="margin-top:8px"></div>
+      </div>
+      <div id="seance-patient-selectionne" style="display:none">
+        <div class="card" style="display:flex;align-items:center;gap:12px">
+          <div class="fiche-avatar" id="sp-avatar" style="width:42px;height:42px;font-size:16px"></div>
+          <div style="flex:1">
+            <div style="font-weight:600" id="sp-name"></div>
+            <div style="font-size:12px;color:#888" id="sp-sub"></div>
+          </div>
+          <button onclick="deselectionnerPatient()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#bbb">×</button>
+        </div>
+      </div>
+      <div class="fl" style="margin-bottom:10px">
+        <label>Date de la séance</label>
+        <input type="date" id="s-date"/>
+      </div>
+
+    </div>
+
+    <!-- Enregistrement -->
+    <div class="card">
+      <div class="stitle">Enregistrement</div>
+      <div class="rcenter">
+        <div class="rstatus" id="rs">Prêt à enregistrer</div>
+        <div class="rtimer" id="rt">00:00</div>
+        <div class="wave" id="wv">
+          <div class="bar" style="height:4px"></div><div class="bar" style="height:14px"></div>
+          <div class="bar" style="height:6px"></div><div class="bar" style="height:20px"></div>
+          <div class="bar" style="height:9px"></div><div class="bar" style="height:16px"></div>
+          <div class="bar" style="height:5px"></div><div class="bar" style="height:12px"></div>
+          <div class="bar" style="height:14px"></div><div class="bar" style="height:4px"></div>
+        </div>
+        <button class="rbtn" id="rb" onclick="demarrer()">🎙</button>
+        <div class="ctrls">
+          <button id="pb" disabled onclick="pauseR()">⏸ Pause</button>
+          <button id="sb" disabled onclick="arreter()">⏹ Arrêter</button>
+        </div>
+        <p style="font-size:11px;color:#bbb;margin-top:6px;line-height:1.5" id="rn">Appuyez sur le micro<br>Autorisez l'accès si demandé</p>
+        <div id="errd" style="display:none"></div>
+      </div>
+      <div id="ap" style="display:none"></div>
+      <div id="tz" style="display:none;margin-top:8px">
+        <label style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#bbb">Transcription</label>
+        <div class="tbox" id="tb"></div>
+      </div>
+      <div class="note-input" id="note-wrap" style="display:none">
+        <label>Note personnelle sur cette séance</label>
+        <textarea id="s-note" placeholder="Observations, ressenti..." rows="2"></textarea>
+      </div>
+    </div>
+
+    <button class="btn-main" id="gb" disabled onclick="generer()">✦ Générer le résumé</button>
+
+    <div id="rz" style="display:none">
+      <div class="card">
+        <div class="stitle">Email généré</div>
+        <div class="rtext" id="rx"></div>
+        <div class="arow">
+          <button onclick="copier()">⧉ Copier</button>
+          <button onclick="ouvrir()">✉ Mail</button>
+        </div>
+      </div>
+      <button class="btn-main" onclick="sauvegarderEtNouvelle()">✓ Sauvegarder & nouvelle séance</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== STORAGE =====
+function getPatients(){try{return JSON.parse(localStorage.getItem('medium_patients')||'[]')}catch(e){return[]}}
+function savePatients(p){localStorage.setItem('medium_patients',JSON.stringify(p))}
+function initials(prenom,nom){return((prenom||'?')[0]+(nom||'?')[0]).toUpperCase()}
+
+// ===== STATE =====
+let currentPatientId=null;
+let selectedPatientId=null;
+let mr=null,ch=[],ti=null,sec=0,paused=false,wi=null,tr='',gen='',st=null;
+
+function $(i){return document.getElementById(i)}
+
+// ===== TABS =====
+function showTab(t){
+  $('view-patients').style.display=t==='patients'?'block':'none';
+  $('view-seance').style.display=t==='seance'?'block':'none';
+  $('tab-patients').classList.toggle('active',t==='patients');
+  $('tab-seance').classList.toggle('active',t==='seance');
+  if(t==='patients')renderListe();
+  if(t==='seance')filtrerPatientsSeance();
+}
+
+// ===== LISTE PATIENTS =====
+function showListe(){
+  $('view-liste').style.display='block';
+  $('view-fiche').style.display='none';
+  $('view-nouveau').style.display='none';
+  renderListe();
+}
+
+function renderListe(filtre=''){
+  const patients=getPatients();
+  const wrap=$('patient-list-wrap');
+  const filtered=patients.filter(p=>(p.prenom+' '+p.nom).toLowerCase().includes(filtre.toLowerCase()));
+  if(!filtered.length){
+    wrap.innerHTML='<div class="empty-state"><div>👥</div><p>'+(patients.length?'Aucun résultat':'Aucun patient enregistré')+'</p></div>';
+    return;
+  }
+  wrap.innerHTML='<div class="patient-list">'+filtered.map(p=>`
+    <div class="patient-item" onclick="showFiche('${p.id}')">
+      <div class="avatar">${initials(p.prenom,p.nom)}</div>
+      <div class="patient-info">
+        <div class="patient-name">${p.prenom} ${p.nom}</div>
+        <div class="patient-sub">${p.email||p.tel||'Aucun contact'}</div>
+      </div>
+      <div class="patient-count">${(p.seances||[]).length} séance${(p.seances||[]).length>1?'s':''}</div>
+    </div>`).join('')+'</div>';
+}
+
+function filtrerPatients(){renderListe($('search').value)}
+
+// ===== FICHE PATIENT =====
+function showFiche(id){
+  const patients=getPatients();
+  const p=patients.find(x=>x.id===id);
+  if(!p)return;
+  currentPatientId=id;
+  $('view-liste').style.display='none';
+  $('view-fiche').style.display='block';
+  $('view-nouveau').style.display='none';
+  $('fiche-avatar').textContent=initials(p.prenom,p.nom);
+  $('fiche-name').textContent=p.prenom+' '+p.nom;
+  $('fiche-sub').textContent=[p.email,p.tel].filter(Boolean).join(' · ')||'Aucun contact';
+  $('stat-seances').textContent=(p.seances||[]).length;
+  const derniere=(p.seances||[]).slice(-1)[0];
+  $('stat-dernier').textContent=derniere?new Date(derniere.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'—';
+  $('fiche-notes').value=p.notes||'';
+  renderHistorique(p);
+}
+
+function renderHistorique(p){
+  const seances=(p.seances||[]).slice().reverse();
+  if(!seances.length){$('historique-seances').innerHTML='<div class="no-seances">Aucune séance enregistrée</div>';return}
+  $('historique-seances').innerHTML=seances.map(s=>`
+    <div class="seance-item">
+      <div class="seance-date">${new Date(s.date).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+      <div class="seance-resume">${s.resume||'(Pas de résumé)'}</div>
+      ${s.note?`<div class="seance-note">📝 ${s.note}</div>`:''}
+    </div>`).join('');
+}
+
+function sauvegarderNotes(){
+  const patients=getPatients();
+  const i=patients.findIndex(x=>x.id===currentPatientId);
+  if(i<0)return;
+  patients[i].notes=$('fiche-notes').value;
+  savePatients(patients);
+}
+
+function supprimerPatient(){
+  if(!confirm('Supprimer ce patient et tout son historique ?'))return;
+  const patients=getPatients().filter(x=>x.id!==currentPatientId);
+  savePatients(patients);
+  showListe();
+}
+
+function demarrerSeancePour(){
+  selectedPatientId=currentPatientId;
+  showTab('seance');
+  const patients=getPatients();
+  const p=patients.find(x=>x.id===selectedPatientId);
+  if(p)afficherPatientSelectionne(p);
+}
+
+// ===== NOUVEAU PATIENT =====
+function showNouveauPatient(){
+  $('view-liste').style.display='none';
+  $('view-fiche').style.display='none';
+  $('view-nouveau').style.display='block';
+  ['np-prenom','np-nom','np-email','np-tel','np-notes'].forEach(id=>$(id).value='');
+}
+
+function creerPatient(){
+  const prenom=$('np-prenom').value.trim();
+  const nom=$('np-nom').value.trim();
+  if(!prenom||!nom){alert('Prénom et nom obligatoires');return}
+  const patients=getPatients();
+  const p={id:Date.now().toString(),prenom,nom,email:$('np-email').value.trim(),tel:$('np-tel').value.trim(),notes:$('np-notes').value.trim(),seances:[],createdAt:new Date().toISOString()};
+  patients.push(p);
+  savePatients(patients);
+  showFiche(p.id);
+}
+
+// ===== SÉANCE - SÉLECTION PATIENT =====
+function filtrerPatientsSeance(){
+  const q=$('search-seance').value.toLowerCase();
+  const patients=getPatients();
+  const filtered=patients.filter(p=>(p.prenom+' '+p.nom).toLowerCase().includes(q));
+  const wrap=$('seance-patient-list');
+  if(selectedPatientId){wrap.innerHTML='';return}
+  if(!filtered.length){wrap.innerHTML='<p style="font-size:13px;color:#bbb;text-align:center;padding:10px">Aucun patient trouvé</p>';return}
+  wrap.innerHTML='<div class="patient-list">'+filtered.slice(0,5).map(p=>`
+    <div class="patient-item" onclick="selectionnerPatient('${p.id}')">
+      <div class="avatar" style="width:34px;height:34px;font-size:12px">${initials(p.prenom,p.nom)}</div>
+      <div class="patient-info"><div class="patient-name">${p.prenom} ${p.nom}</div><div class="patient-sub">${p.email||p.tel||''}</div></div>
+    </div>`).join('')+'</div>';
+}
+
+function selectionnerPatient(id){
+  selectedPatientId=id;
+  const p=getPatients().find(x=>x.id===id);
+  if(p)afficherPatientSelectionne(p);
+}
+
+function afficherPatientSelectionne(p){
+  $('seance-patient-list').innerHTML='';
+  $('search-seance').value='';
+  $('sp-avatar').textContent=initials(p.prenom,p.nom);
+  $('sp-name').textContent=p.prenom+' '+p.nom;
+  $('sp-sub').textContent=p.email||p.tel||'';
+  $('seance-select-patient').querySelector('.search-wrap').style.display='none';
+  $('seance-patient-selectionne').style.display='block';
+}
+
+function deselectionnerPatient(){
+  selectedPatientId=null;
+  $('seance-select-patient').querySelector('.search-wrap').style.display='block';
+  $('seance-patient-selectionne').style.display='none';
+  filtrerPatientsSeance();
+}
+
+// ===== ENREGISTREMENT =====
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function wave(on){
+  clearInterval(wi);
+  const bars=document.querySelectorAll('.bar');
+  if(!on){bars.forEach((b,i)=>{b.style.height=[4,14,6,20,9,16,5,12,14,4][i]+'px'});return}
+  wi=setInterval(()=>bars.forEach(b=>{b.style.height=(4+Math.random()*22)+'px'}),120)
+}
+function showErr(msg){$('errd').innerHTML='<div class="err">'+msg+'</div>';$('errd').style.display='block'}
+
+async function demarrer(){
+  if(mr&&mr.state!=='inactive')return;
+  $('errd').style.display='none';
+  try{
+    st=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    ch=[];
+    let mime='audio/mp4';
+    if(!MediaRecorder.isTypeSupported('audio/mp4')){
+      mime=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
+    }
+    mr=new MediaRecorder(st,{mimeType:mime});
+    mr.ondataavailable=e=>{if(e.data&&e.data.size>0)ch.push(e.data)};
+    mr.onstop=onStop;
+    mr.start(500);
+    sec=0;paused=false;gen='';
+    $('rt').textContent='00:00';
+    ti=setInterval(()=>{if(!paused){sec++;$('rt').textContent=fmt(sec)}},1000);
+    $('rb').className='rbtn rec';$('rb').textContent='🔴';
+    $('rs').textContent='Enregistrement en cours...';
+    $('pb').disabled=false;$('sb').disabled=false;
+    $('rn').textContent='Parlez librement — appuyez Arrêter à la fin';
+    $('ap').style.display='none';$('gb').disabled=true;
+    $('rz').style.display='none';$('note-wrap').style.display='none';
+    wave(true);
+  }catch(e){
+    let msg='Erreur : '+e.message;
+    if(e.name==='NotAllowedError')msg='⚠️ Accès au micro refusé.\n\nSur iPhone : Réglages → Safari → Microphone → Autoriser';
+    else if(e.name==='NotFoundError')msg='⚠️ Aucun micro détecté.';
+    showErr(msg);$('rs').textContent='Micro inaccessible';
+  }
+}
+
+function pauseR(){
+  if(!mr)return;
+  if(paused){
+    mr.resume();paused=false;
+    $('rb').className='rbtn rec';$('rb').textContent='🔴';
+    $('rs').textContent='Enregistrement en cours...';
+    $('pb').textContent='⏸ Pause';wave(true);
+  }else{
+    mr.pause();paused=true;
+    $('rb').className='rbtn pau';$('rb').textContent='⏸';
+    $('rs').textContent='En pause';
+    $('pb').textContent='▶ Reprendre';wave(false);
+  }
+}
+
+function arreter(){
+  if(!mr)return;
+  try{mr.stop()}catch(e){}
+  if(st)st.getTracks().forEach(t=>t.stop());
+  clearInterval(ti);wave(false);
+  $('rb').className='rbtn';$('rb').textContent='🎙';
+  $('rs').textContent='✓ Terminé — analyse en cours...';
+  $('pb').disabled=true;$('sb').disabled=true;$('rn').textContent='';
+}
+
+function onStop(){
+  const blob=new Blob(ch,{type:ch[0]?.type||'audio/mp4'});
+  const url=URL.createObjectURL(blob);
+  $('ap').innerHTML='<audio controls src="'+url+'"></audio>';
+  $('ap').style.display='block';
+  $('note-wrap').style.display='block';
+  transcribe();
+}
+
+function transcribe(){
+  $('tz').style.display='block';$('tb').textContent='Analyse...';
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){$('tb').textContent='Transcription non disponible.';$('rs').textContent='✓ Prêt à générer';$('gb').disabled=false;return}
+  const r=new SR();
+  r.lang='fr-FR';r.continuous=true;r.interimResults=true;
+  let final='',sil=null;
+  r.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    $('tb').textContent=(final+interim)||'En écoute...';
+    clearTimeout(sil);sil=setTimeout(()=>{try{r.stop()}catch(e){}},3500);
+  };
+  r.onend=()=>{tr=final;$('tb').textContent=final||'(Aucune transcription)';$('rs').textContent='✓ Prêt à générer';$('gb').disabled=false};
+  r.onerror=()=>{tr=final;$('rs').textContent='✓ Prêt à générer';$('gb').disabled=false};
+  try{r.start();setTimeout(()=>{try{r.stop()}catch(e){}},Math.min(sec*1000+5000,180000))}
+  catch(e){$('rs').textContent='✓ Prêt à générer';$('gb').disabled=false}
+}
+
+// ===== GÉNÉRATION =====
+async function generer(){
+  const patients=getPatients();
+  const p=selectedPatientId?patients.find(x=>x.id===selectedPatientId):null;
+  const prenom=p?p.prenom:'le patient';
+  const d1=$('s-date').value,d2='';
+  const fd=d1?new Date(d1).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):'cette séance';
+  const frdv=d2?new Date(d2).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):null;
+  const btn=$('gb');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Génération...';
+  $('rz').style.display='none';
+
+  // Historique pour personnaliser
+  const nbSeances=p?(p.seances||[]).length:0;
+  const histoContext=nbSeances>0?`C'est la ${nbSeances+1}e séance de ${prenom}.`:'';
+
+  const tp=tr?`Transcription :\n"""\n${tr.slice(0,4000)}\n"""\nIdentifie : thèmes/messages reçus, ambiance, conseils.`:'Pas de transcription.';
+  const prompt=`Tu es l'assistant d'un médium professionnel. Rédige un résumé de séance structuré et chaleureux à envoyer par email au patient.
+
+Patient : ${prenom} | Séance : ${fd}${histoContext?' | '+histoContext:''}
+
+${tp}
+
+Rédige le résumé en suivant EXACTEMENT cette structure en 6 parties, avec un saut de ligne entre chaque partie :
+
+1. OUVERTURE
+Commence par "Bonjour ${prenom}," puis décris en 2 phrases l'ambiance générale de la séance (légère, chargée, lumineuse, émotionnelle...) et comment la connexion s'est établie.
+
+2. CONTACTS & PRÉSENCES
+Décris qui s'est manifesté (lien avec le patient), comment la présence s'est exprimée (images, sensations, chaleur, parfum...). Si plusieurs présences, les mentionner.
+
+3. MESSAGES REÇUS
+Reformule les messages transmis de façon poétique et bienveillante. Ce que l'entité ou le guide souhaitait communiquer au patient.
+
+4. SYMBOLES & VISIONS
+Décris les images, couleurs, objets ou lieux perçus pendant la séance et leur signification spirituelle.
+
+5. CONSEILS & GUIDANCE
+Liste clairement 2 à 3 conseils ou exercices pour la période à venir (protection, méditation, affirmation, attitude...).
+
+6. CLÔTURE
+Mot d'encouragement personnel, rappel que la connexion reste accessible. Signe "Avec toute ma lumière," puis ligne vide puis "[Votre prénom]".
+
+Ton : doux, spirituel, professionnel et humain. Corps du mail uniquement, sans titres de section visibles, 220-280 mots.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    gen=data.content.map(b=>b.text||'').join('');
+    $('rx').textContent=gen;$('rz').style.display='block';
+    $('rz').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){showErr('Erreur réseau. Vérifiez votre connexion.')}
+  btn.disabled=false;btn.innerHTML='✦ Générer le résumé';
+}
+
+// ===== SAUVEGARDE =====
+function sauvegarderEtNouvelle(){
+  if(!gen){resetSeance();return}
+  if(selectedPatientId){
+    const patients=getPatients();
+    const i=patients.findIndex(x=>x.id===selectedPatientId);
+    if(i>=0){
+      const seance={id:Date.now().toString(),date:$('s-date').value||new Date().toISOString().split('T')[0],resume:gen,note:$('s-note').value.trim(),rdv:$('s-rdv').value};
+      patients[i].seances=patients[i].seances||[];
+      patients[i].seances.push(seance);
+      savePatients(patients);
+      alert('✓ Séance sauvegardée dans la fiche de '+patients[i].prenom+' !');
+    }
+  }
+  resetSeance();
+}
+
+function resetSeance(){
+  mr=null;ch=[];sec=0;paused=false;tr='';gen='';
+  $('rt').textContent='00:00';$('rs').textContent='Prêt à enregistrer';
+  $('rn').textContent='Appuyez sur le micro\nAutorisez l\'accès si demandé';
+  $('ap').style.display='none';$('ap').innerHTML='';
+  $('tz').style.display='none';$('tb').textContent='';
+  $('rz').style.display='none';$('errd').style.display='none';
+  $('note-wrap').style.display='none';$('s-note').value='';
+  $('gb').disabled=true;$('gb').innerHTML='✦ Générer le résumé';
+  $('pb').disabled=true;$('sb').disabled=true;
+  $('rb').className='rbtn';$('rb').textContent='🎙';
+  wave(false);
+}
+
+function copier(){
+  if(navigator.share){navigator.share({text:gen}).catch(()=>{})}
+  else{navigator.clipboard.writeText(gen).then(()=>{const b=event.target.closest('button');const o=b.textContent;b.textContent='✓ Copié';setTimeout(()=>{b.textContent=o},2000)})}
+}
+
+function ouvrir(){
+  const patients=getPatients();
+  const p=selectedPatientId?patients.find(x=>x.id===selectedPatientId):null;
+  const em=p?p.email:'';
+  const pr=p?p.prenom:'';
+  const d=$('s-date').value?new Date($('s-date').value).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):'';
+  const s=encodeURIComponent('Résumé de votre séance'+(d?' du '+d:'')+(pr?' – '+pr:''));
+  window.location.href='mailto:'+em+'?subject='+s+'&body='+encodeURIComponent(gen);
+}
+
+// ===== INIT =====
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone){$('tip').style.display='block'}
+$('s-date').valueAsDate=new Date();
+renderListe();
+filtrerPatientsSeance();
+</script>
+</body>
+</html>
