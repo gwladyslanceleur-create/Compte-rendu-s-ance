@@ -166,12 +166,8 @@ audio{width:100%;margin-top:10px;border-radius:10px}
       <button class="back-btn" onclick="showListe()">← Retour</button>
       <div class="card">
         <div class="stitle">Nouveau patient</div>
-        <div class="r2">
-          <div class="fl"><label>Prénom *</label><input type="text" id="np-prenom" placeholder="Marie" autocomplete="off"/></div>
-          <div class="fl"><label>Nom *</label><input type="text" id="np-nom" placeholder="Dupont" autocomplete="off"/></div>
-        </div>
+        <div class="fl"><label>Prénom *</label><input type="text" id="np-prenom" placeholder="Marie" autocomplete="off"/></div>
         <div class="fl"><label>Email</label><input type="email" id="np-email" placeholder="marie@email.com" autocomplete="off"/></div>
-        <div class="fl"><label>Téléphone</label><input type="tel" id="np-tel" placeholder="06 00 00 00 00" autocomplete="off"/></div>
         <div class="fl"><label>Notes</label><textarea id="np-notes" placeholder="Notes personnelles..." rows="3"></textarea></div>
       </div>
       <button class="btn-main" onclick="creerPatient()">Créer le patient</button>
@@ -262,7 +258,7 @@ audio{width:100%;margin-top:10px;border-radius:10px}
 // ===== STORAGE =====
 function getPatients(){try{return JSON.parse(localStorage.getItem('medium_patients')||'[]')}catch(e){return[]}}
 function savePatients(p){localStorage.setItem('medium_patients',JSON.stringify(p))}
-function initials(prenom,nom){return((prenom||'?')[0]+(nom||'?')[0]).toUpperCase()}
+function initials(prenom,nom){return(prenom||'?')[0].toUpperCase()}
 
 // ===== STATE =====
 let currentPatientId=null;
@@ -292,7 +288,7 @@ function showListe(){
 function renderListe(filtre=''){
   const patients=getPatients();
   const wrap=$('patient-list-wrap');
-  const filtered=patients.filter(p=>(p.prenom+' '+p.nom).toLowerCase().includes(filtre.toLowerCase()));
+  const filtered=patients.filter(p=>p.prenom.toLowerCase().includes(filtre.toLowerCase()));
   if(!filtered.length){
     wrap.innerHTML='<div class="empty-state"><div>👥</div><p>'+(patients.length?'Aucun résultat':'Aucun patient enregistré')+'</p></div>';
     return;
@@ -301,8 +297,8 @@ function renderListe(filtre=''){
     <div class="patient-item" onclick="showFiche('${p.id}')">
       <div class="avatar">${initials(p.prenom,p.nom)}</div>
       <div class="patient-info">
-        <div class="patient-name">${p.prenom} ${p.nom}</div>
-        <div class="patient-sub">${p.email||p.tel||'Aucun contact'}</div>
+        <div class="patient-name">${p.prenom}</div>
+        <div class="patient-sub">${p.email||'Aucun email'}</div>
       </div>
       <div class="patient-count">${(p.seances||[]).length} séance${(p.seances||[]).length>1?'s':''}</div>
     </div>`).join('')+'</div>';
@@ -320,8 +316,8 @@ function showFiche(id){
   $('view-fiche').style.display='block';
   $('view-nouveau').style.display='none';
   $('fiche-avatar').textContent=initials(p.prenom,p.nom);
-  $('fiche-name').textContent=p.prenom+' '+p.nom;
-  $('fiche-sub').textContent=[p.email,p.tel].filter(Boolean).join(' · ')||'Aucun contact';
+  $('fiche-name').textContent=p.prenom;
+  $('fiche-sub').textContent=p.email||'Aucun email';
   $('stat-seances').textContent=(p.seances||[]).length;
   const derniere=(p.seances||[]).slice(-1)[0];
   $('stat-dernier').textContent=derniere?new Date(derniere.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'—';
@@ -368,15 +364,15 @@ function showNouveauPatient(){
   $('view-liste').style.display='none';
   $('view-fiche').style.display='none';
   $('view-nouveau').style.display='block';
-  ['np-prenom','np-nom','np-email','np-tel','np-notes'].forEach(id=>$(id).value='');
+  ['np-prenom','np-email','np-notes'].forEach(id=>$(id).value='');
 }
 
 function creerPatient(){
   const prenom=$('np-prenom').value.trim();
   const nom=$('np-nom').value.trim();
-  if(!prenom||!nom){alert('Prénom et nom obligatoires');return}
+  if(!prenom){alert('Prénom obligatoire');return}
   const patients=getPatients();
-  const p={id:Date.now().toString(),prenom,nom,email:$('np-email').value.trim(),tel:$('np-tel').value.trim(),notes:$('np-notes').value.trim(),seances:[],createdAt:new Date().toISOString()};
+  const nom='';const p={id:Date.now().toString(),prenom,nom,email:$('np-email').value.trim(),tel:'',notes:$('np-notes').value.trim(),seances:[],createdAt:new Date().toISOString()};
   patients.push(p);
   savePatients(patients);
   showFiche(p.id);
@@ -386,14 +382,14 @@ function creerPatient(){
 function filtrerPatientsSeance(){
   const q=$('search-seance').value.toLowerCase();
   const patients=getPatients();
-  const filtered=patients.filter(p=>(p.prenom+' '+p.nom).toLowerCase().includes(q));
+  const filtered=patients.filter(p=>p.prenom.toLowerCase().includes(q));
   const wrap=$('seance-patient-list');
   if(selectedPatientId){wrap.innerHTML='';return}
   if(!filtered.length){wrap.innerHTML='<p style="font-size:13px;color:#bbb;text-align:center;padding:10px">Aucun patient trouvé</p>';return}
   wrap.innerHTML='<div class="patient-list">'+filtered.slice(0,5).map(p=>`
     <div class="patient-item" onclick="selectionnerPatient('${p.id}')">
       <div class="avatar" style="width:34px;height:34px;font-size:12px">${initials(p.prenom,p.nom)}</div>
-      <div class="patient-info"><div class="patient-name">${p.prenom} ${p.nom}</div><div class="patient-sub">${p.email||p.tel||''}</div></div>
+      <div class="patient-info"><div class="patient-name">${p.prenom}</div><div class="patient-sub">${p.email||''}</div></div>
     </div>`).join('')+'</div>';
 }
 
@@ -407,8 +403,8 @@ function afficherPatientSelectionne(p){
   $('seance-patient-list').innerHTML='';
   $('search-seance').value='';
   $('sp-avatar').textContent=initials(p.prenom,p.nom);
-  $('sp-name').textContent=p.prenom+' '+p.nom;
-  $('sp-sub').textContent=p.email||p.tel||'';
+  $('sp-name').textContent=p.prenom;
+  $('sp-sub').textContent=p.email||'';
   $('seance-select-patient').querySelector('.search-wrap').style.display='none';
   $('seance-patient-selectionne').style.display='block';
 }
