@@ -440,7 +440,7 @@ async function generer(){
   var prompt='Tu es l\'assistant d\'un médium professionnel. Rédige un résumé de séance structuré à envoyer par email.\n\nPatient : '+prenom+' | Séance : '+fd+(hctx?' | '+hctx:'')+'\n\n'+tp+'\n\nRédige en 6 parties sans titres visibles :\n1. OUVERTURE : "Bonjour '+prenom+'," puis ambiance de la séance\n2. CONTACTS & PRÉSENCES : qui s\'est manifesté, comment\n3. MESSAGES REÇUS : messages transmis, ton poétique et bienveillant\n4. SYMBOLES & VISIONS : images, couleurs, objets perçus et leur sens\n5. CONSEILS & GUIDANCE : 2-3 conseils ou exercices concrets\n6. CLÔTURE : encouragement, signe "Avec toute ma lumière," puis "[Votre prénom]"\n\nTon doux, spirituel, professionnel. 220-280 mots. Corps du mail uniquement.';
   var btn=$('gb');btn.disabled=true;btn.innerHTML='<span class="spin"></span>Génération...';$('rz').style.display='none';
   try{
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
     gen=data.content.map(function(b){return b.text||''}).join('');
     $('rx').textContent=gen;$('rz').style.display='block';
