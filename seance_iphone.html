@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Séance Médium"/>
+<meta name="theme-color" content="#1a1a1a"/>
+<title>Séance Médium</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#f7f6f2;--card:#fff;--border:#e0ddd6;--text:#1a1a1a;--muted:#888;--dim:#bbb;--danger:#c0392b;--dangerbg:#fdf0ef;--warn:#e67e22;--warnbg:#fef9f0;--gold:#8B6914}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:env(safe-area-inset-top,20px) 0 env(safe-area-inset-bottom,20px)}
+.app{max-width:500px;margin:0 auto;padding:0 16px}
+.header{text-align:center;padding:20px 0 16px}
+.header h1{font-size:20px;font-weight:600;color:var(--text)}
+.header p{font-size:12px;color:var(--muted);margin-top:3px;letter-spacing:.05em}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.stitle{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;font-weight:600}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.r2:last-child{margin-bottom:0}
+.fl{margin-bottom:10px}.fl:last-child{margin-bottom:0}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;font-weight:500}
+input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit;color:var(--text);background:#fff;outline:none;-webkit-appearance:none}
+input:focus{border-color:#999}
+.rcenter{text-align:center;padding:8px 0}
+.rstatus{font-size:13px;color:var(--muted);min-height:20px;margin-bottom:6px}
+.rtimer{font-size:52px;font-weight:300;color:var(--text);font-variant-numeric:tabular-nums;margin:4px 0 12px;letter-spacing:.02em}
+.wave{display:flex;align-items:center;justify-content:center;gap:4px;height:36px;margin-bottom:14px}
+.bar{width:4px;border-radius:2px;background:var(--dim);min-height:4px;transition:height .1s}
+.rbtn{width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:32px;background:#1a1a1a;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:transform .1s;-webkit-appearance:none}
+.rbtn:active{transform:scale(.95)}
+.rbtn.rec{background:#c0392b;box-shadow:0 4px 20px rgba(192,57,43,.3)}
+.rbtn.pau{background:#e67e22;box-shadow:0 4px 20px rgba(230,126,34,.3)}
+.ctrls{display:flex;gap:10px;justify-content:center;margin-bottom:8px}
+.ctrls button{font-size:14px;padding:10px 20px;cursor:pointer;border-radius:10px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-family:inherit;font-weight:500;-webkit-appearance:none}
+.ctrls button:active{background:#f0ede6}
+.ctrls button:disabled{opacity:.35}
+audio{width:100%;margin-top:12px;border-radius:10px}
+.tbox{font-size:13px;color:var(--muted);background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;max-height:90px;overflow-y:auto;white-space:pre-wrap;margin-top:8px;line-height:1.6}
+.note{font-size:11px;color:var(--dim);text-align:center;margin-top:6px;line-height:1.5;padding:0 8px}
+.err{font-size:13px;color:var(--danger);background:var(--dangerbg);border-radius:10px;padding:12px;margin-top:10px;line-height:1.6}
+.bmain{width:100%;padding:16px;font-size:15px;font-weight:600;cursor:pointer;border-radius:14px;border:none;background:#1a1a1a;color:#fff;font-family:inherit;letter-spacing:.02em;-webkit-appearance:none;margin-bottom:20px}
+.bmain:active{opacity:.85}
+.bmain:disabled{opacity:.35}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.rtext{font-size:15px;line-height:1.8;color:var(--text);white-space:pre-wrap}
+.arow{display:flex;gap:8px;margin-top:12px}
+.arow button{flex:1;font-size:13px;font-weight:500;padding:12px 6px;cursor:pointer;border-radius:10px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-family:inherit;-webkit-appearance:none}
+.arow button:active{background:#f0ede6}
+.sep{border:none;border-top:1px solid var(--border);margin:12px 0}
+.install-tip{background:#1a1a1a;color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.install-tip .icon{font-size:22px;flex-shrink:0;margin-top:-2px}
+.install-tip strong{display:block;margin-bottom:3px;font-size:14px}
+.install-tip button{margin-top:8px;background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <h1>✦ Séance Médium</h1>
+  <p>Enregistrement & résumé automatique</p>
+</div>
+
+<div class="install-tip" id="tip" style="display:none">
+  <div class="icon">📲</div>
+  <div>
+    <strong>Ajouter à l'écran d'accueil</strong>
+    Appuyez sur <strong>⎋ Partager</strong> en bas de Safari, puis <strong>"Sur l'écran d'accueil"</strong> pour avoir l'icône comme une vraie appli.
+    <br><button onclick="document.getElementById('tip').style.display='none'">Masquer</button>
+  </div>
+</div>
+
+<div class="card">
+  <p class="stitle">Patient</p>
+  <div class="r2">
+    <div class="fl"><label>Prénom</label><input type="text" id="prenom" placeholder="Marie" autocomplete="off"/></div>
+    <div class="fl"><label>Email</label><input type="email" id="email" placeholder="marie@mail.com" autocomplete="off"/></div>
+  </div>
+  <div class="r2">
+    <div class="fl"><label>Date séance</label><input type="date" id="d1"/></div>
+    <div class="fl"><label>Prochain RDV</label><input type="date" id="d2"/></div>
+  </div>
+</div>
+
+<div class="card">
+  <p class="stitle">Enregistrement</p>
+  <div class="rcenter">
+    <div class="rstatus" id="rs">Prêt à enregistrer</div>
+    <div class="rtimer" id="rt">00:00</div>
+    <div class="wave" id="wv">
+      <div class="bar" style="height:4px"></div><div class="bar" style="height:14px"></div>
+      <div class="bar" style="height:6px"></div><div class="bar" style="height:22px"></div>
+      <div class="bar" style="height:9px"></div><div class="bar" style="height:18px"></div>
+      <div class="bar" style="height:5px"></div><div class="bar" style="height:12px"></div>
+      <div class="bar" style="height:16px"></div><div class="bar" style="height:4px"></div>
+    </div>
+    <button class="rbtn" id="rb" onclick="demarrer()">🎙</button>
+    <div class="ctrls">
+      <button id="pb" disabled onclick="pauseR()">⏸ Pause</button>
+      <button id="sb" disabled onclick="arreter()">⏹ Arrêter</button>
+    </div>
+    <p class="note" id="rn">Appuyez sur le micro<br>Autorisez l'accès si Safari le demande</p>
+    <div id="errd" style="display:none"></div>
+  </div>
+  <div id="ap" style="display:none"></div>
+  <div id="tz" style="display:none;margin-top:8px">
+    <label style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)">Transcription</label>
+    <div class="tbox" id="tb"></div>
+  </div>
+</div>
+
+<button class="bmain" id="gb" disabled onclick="generer()">✦ &nbsp;Générer le résumé</button>
+
+<div id="rz" style="display:none;margin-bottom:20px">
+  <div class="card">
+    <p class="stitle">Email généré</p>
+    <div class="rtext" id="rx"></div>
+    <div class="arow">
+      <button onclick="copier()">⧉ Copier</button>
+      <button onclick="ouvrir()">✉ Mail</button>
+      <button onclick="reset()">↺ Nouveau</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+let mr=null,ch=[],ti=null,sec=0,paused=false,wi=null,tr='',gen='',st=null;
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function $(i){return document.getElementById(i)}
+function wave(on){
+  clearInterval(wi);
+  const bars=document.querySelectorAll('.bar');
+  if(!on){bars.forEach((b,i)=>{b.style.height=[4,14,6,22,9,18,5,12,16,4][i]+'px'});return}
+  wi=setInterval(()=>bars.forEach(b=>{b.style.height=(4+Math.random()*24)+'px'}),120)
+}
+function showErr(msg){$('errd').innerHTML='<div class="err">'+msg+'</div>';$('errd').style.display='block'}
+
+// Affiche le tip d'installation sur iOS
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone){
+  $('tip').style.display='flex';
+}
+
+async function demarrer(){
+  if(mr&&mr.state!=='inactive')return;
+  $('errd').style.display='none';
+  try{
+    st=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    ch=[];
+    // iOS supporte mieux audio/mp4
+    let mime='audio/mp4';
+    if(!MediaRecorder.isTypeSupported('audio/mp4')){
+      if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))mime='audio/webm;codecs=opus';
+      else mime='audio/webm';
+    }
+    mr=new MediaRecorder(st,{mimeType:mime});
+    mr.ondataavailable=e=>{if(e.data&&e.data.size>0)ch.push(e.data)};
+    mr.onstop=onStop;
+    mr.start(500);
+    sec=0;paused=false;
+    $('rt').textContent='00:00';
+    ti=setInterval(()=>{if(!paused){sec++;$('rt').textContent=fmt(sec)}},1000);
+    $('rb').className='rbtn rec';$('rb').textContent='🔴';
+    $('rs').textContent='Enregistrement en cours...';
+    $('pb').disabled=false;$('sb').disabled=false;
+    $('rn').textContent='Parlez librement — appuyez Arrêter à la fin';
+    $('ap').style.display='none';$('gb').disabled=true;
+    wave(true);
+  }catch(e){
+    let msg='Erreur : '+e.message;
+    if(e.name==='NotAllowedError')msg='⚠️ Accès au micro refusé.\n\nSur iPhone : Réglages → Safari → Microphone → Autoriser';
+    else if(e.name==='NotFoundError')msg='⚠️ Aucun micro détecté.';
+    showErr(msg);$('rs').textContent='Micro inaccessible';
+  }
+}
+
+function pauseR(){
+  if(!mr)return;
+  if(paused){
+    mr.resume();paused=false;
+    $('rb').className='rbtn rec';$('rb').textContent='🔴';
+    $('rs').textContent='Enregistrement en cours...';
+    $('pb').textContent='⏸ Pause';wave(true);
+  }else{
+    mr.pause();paused=true;
+    $('rb').className='rbtn pau';$('rb').textContent='⏸';
+    $('rs').textContent='En pause';
+    $('pb').textContent='▶ Reprendre';wave(false);
+  }
+}
+
+function arreter(){
+  if(!mr)return;
+  try{mr.stop()}catch(e){}
+  if(st)st.getTracks().forEach(t=>t.stop());
+  clearInterval(ti);wave(false);
+  $('rb').className='rbtn';$('rb').textContent='🎙';
+  $('rs').textContent='✓ Terminé — analyse en cours...';
+  $('pb').disabled=true;$('sb').disabled=true;$('rn').textContent='';
+}
+
+function onStop(){
+  const blob=new Blob(ch,{type:ch[0]?.type||'audio/mp4'});
+  const url=URL.createObjectURL(blob);
+  $('ap').innerHTML='<audio controls src="'+url+'"></audio>';
+  $('ap').style.display='block';
+  transcribe();
+}
+
+function transcribe(){
+  $('tz').style.display='block';$('tb').textContent='Analyse...';
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    $('tb').textContent='Transcription non disponible sur cet appareil.';
+    $('rs').textContent='✓ Prêt à générer';$('gb').disabled=false;return;
+  }
+  const r=new SR();
+  r.lang='fr-FR';r.continuous=true;r.interimResults=true;
+  let final='',sil=null;
+  r.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    $('tb').textContent=(final+interim)||'En écoute...';
+    clearTimeout(sil);sil=setTimeout(()=>{try{r.stop()}catch(e){}},3500);
+  };
+  r.onend=()=>{
+    tr=final;
+    $('tb').textContent=final||'(Aucune transcription)';
+    $('rs').textContent='✓ Prêt à générer';$('gb').disabled=false;
+  };
+  r.onerror=()=>{tr=final;$('rs').textContent='✓ Prêt à générer';$('gb').disabled=false};
+  try{r.start();setTimeout(()=>{try{r.stop()}catch(e){}},Math.min(sec*1000+5000,180000))}
+  catch(e){$('rs').textContent='✓ Prêt à générer';$('gb').disabled=false}
+}
+
+function gv(id){return $(id).value.trim()}
+
+async function generer(){
+  const prenom=gv('prenom')||'le patient';
+  const d1=gv('d1'),d2=gv('d2');
+  const fd=d1?new Date(d1).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):'cette séance';
+  const frdv=d2?new Date(d2).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):null;
+  const btn=$('gb');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Génération...';
+  $('rz').style.display='none';
+  const tp=tr?`Transcription :\n"""\n${tr.slice(0,4000)}\n"""\nIdentifie : thèmes/messages reçus, ambiance, conseils.`:'Pas de transcription.';
+  const prompt=`Tu es l'assistant d'un médium professionnel. Rédige un résumé de séance chaleureux à envoyer par email.\n\nPatient : ${prenom} | Séance : ${fd}${frdv?' | Prochain RDV : '+frdv:''}\n\n${tp}\n\nConsignes : commence par "Bonjour ${prenom},", ton doux et spirituel, résume thèmes/messages de façon poétique, mentionne l'ambiance, liste les conseils clairement, termine par un encouragement${frdv?' et mentionne le RDV le '+frdv:''}, signe "Avec toute ma lumière," puis ligne vide puis "[Votre prénom]". Corps du mail uniquement, 180-250 mots.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    gen=data.content.map(b=>b.text||'').join('');
+    $('rx').textContent=gen;$('rz').style.display='block';
+    $('rz').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){showErr('Erreur réseau. Vérifiez votre connexion.')}
+  btn.disabled=false;btn.innerHTML='✦ &nbsp;Générer le résumé';
+}
+
+function copier(){
+  if(navigator.share){
+    navigator.share({text:gen}).catch(()=>{});
+  }else{
+    navigator.clipboard.writeText(gen).then(()=>{
+      const b=event.target.closest('button');const o=b.textContent;
+      b.textContent='✓ Copié';setTimeout(()=>{b.textContent=o},2000);
+    });
+  }
+}
+
+function ouvrir(){
+  const em=gv('email'),pr=gv('prenom'),d1=gv('d1');
+  const d=d1?new Date(d1).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):'';
+  const s=encodeURIComponent('Résumé de votre séance'+(d?' du '+d:'')+(pr?' – '+pr:''));
+  window.location.href='mailto:'+em+'?subject='+s+'&body='+encodeURIComponent(gen);
+}
+
+function reset(){
+  ['prenom','email','d1','d2'].forEach(id=>$(id).value='');
+  mr=null;ch=[];sec=0;paused=false;tr='';gen='';
+  $('rt').textContent='00:00';$('rs').textContent='Prêt à enregistrer';
+  $('rn').textContent='Appuyez sur le micro\nAutorisez l\'accès si Safari le demande';
+  $('ap').style.display='none';$('ap').innerHTML='';
+  $('tz').style.display='none';$('tb').textContent='';
+  $('rz').style.display='none';$('errd').style.display='none';
+  $('gb').disabled=true;$('gb').innerHTML='✦ &nbsp;Générer le résumé';
+  $('pb').disabled=true;$('sb').disabled=true;
+  $('rb').className='rbtn';$('rb').textContent='🎙';wave(false);
+}
+
+$('d1').valueAsDate=new Date();
+</script>
+</body>
+</html>
